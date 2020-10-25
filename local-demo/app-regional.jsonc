@@ -68,7 +68,7 @@
   "outputs": {
     "appRgName": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('rgDeploymentName'))).outputs.rgName.value]"
+      "value": "[reference(variables('rgDeploymentName')).outputs.rgName.value]"
     },
     "location": {
       "type": "string",
