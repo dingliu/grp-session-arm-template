@@ -23,7 +23,7 @@ steps:
   displayName: Build and Push
   inputs:
     command: buildAndPush
-    repository: hello-app
+    repository: dingliu/hello-app
     Dockerfile: 'hello-app/Dockerfile'
     buildContext: 'hello-app/'
-    tags: $(Date:yyyyMMdd)$(Rev:.r)
+    tags: $(Build.BuildNumber)
