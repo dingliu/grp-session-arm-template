@@ -20,6 +20,7 @@
       "name": "[variables('rgName')]",
       "type": "Microsoft.Resources/resourceGroups",
       "apiVersion": "2019-10-01",
+      "tags": { "Environment": "Training", "Name": "Ding Liu" },
       "location": "[parameters('location')]"
     }
   ],
