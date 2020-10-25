@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "acctNamePrefix": {
+      "type": "string",
+      "metadata": { "description": "The prefix part of the storage account name." }
+    },
+    "environment": {
+      "type": "string",
+      "allowedValues": ["dev", "test", "prod"],
+      "metadata": { "description": "The environment of the storage account." }
+    },
+    "acctCopies": {
+      "type": "int",
+      "minValue": 1, "maxValue": 5,
+      "metadata": { "description": "the number of storage account(s), 5 maximum." }
+    }
+  },
+  "functions": [],
+  "variables": {
+    "copy": [
+      {
+        "name": "storAcctNames",
+        "count": "[parameters('acctCopies')]",
+        "input": "[concat(
+          parameters('acctNamePrefix'),
+          copyIndex('storAcctNames'),
+          parameters('environment'),
+          uniqueString(toLower(resourceGroup().id))
+        )]"
+      }
+    ]
+  },
+  "resources": [
+    {
+      "copy": {
+        "name": "storAcctCopy",
+        "count": "[parameters('acctCopies')]"
+      },
+      "name": "[variables('storAcctNames')[copyIndex()]]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2019-06-01",
+      "location": "[resourceGroup().location]",
+      "kind": "StorageV2",
+      "sku": { "name": "Standard_LRS" }
+    }
+  ],
+  "outputs": {
+    "storAcctResourceIDs": {
+      "type": "array",
+      "copy": {
+        "count": "[parameters('acctCopies')]",
+        "input": "[resourceId('Microsoft.Storage/storageAccounts',variables('storAcctNames')[copyIndex()])]"
+      }
+    }
+  }
+}

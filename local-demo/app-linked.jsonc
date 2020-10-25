@@ -1,0 +1,60 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appName": {
+      "type": "string",
+      "metadata": { "description": "The name of the application." }
+    },
+    "locations": {
+      "type": "array",
+      "metadata": { "description": "The locations the application gets deployed to." }
+    }
+  },
+  "functions": [
+    {
+      "namespace": "General",
+      "members": {
+        "getLatestApiVer": {
+          "parameters": [
+            { "name": "provider-namespace", "type": "string" },
+            { "name": "resource-type", "type": "string" }
+          ],
+          "output": {
+            "value": "[providers(parameters('provider-namespace'), parameters('resource-type')).apiVersions[0]]",
+            "type": "string"
+          }
+        }
+      }
+    }
+  ],
+  "variables": {
+    "templateBaseURL":     "https://raw.githubusercontent.com/dingliu/grp-session-arm-template/master/local-demo/",
+    "appTemplateFileName": "app-regional.jsonc",
+    "templateFullURL":     "[concat(variables('templateBaseURL'), variables('appTemplateFileName'))]"
+  },
+  "resources": [
+    {
+      "copy": {
+        "name": "appCopy",
+        "count": "[length(parameters('locations'))]"
+      },
+      "name": "[concat(deployment().name, '-', parameters('locations')[copyIndex()])]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "[General.getLatestApiVer('Microsoft.Resources', 'deployments')]",
+      "location": "[parameters('locations')[copyIndex()]]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('templateFullURL')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "appName": { "value": "[parameters('appName')]" },
+          "templateBaseURL": { "value": "[variables('templateBaseURL')]" }
+        }
+      }
+    }
+  ],
+  "outputs": {}
+}

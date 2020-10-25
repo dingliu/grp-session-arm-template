@@ -1,0 +1,15 @@
+name: $(Build.DefinitionName)_$(Date:yyyyMMdd)$(Rev:.r)
+
+pool:
+  vmImage: 'ubuntu-18.04'
+
+trigger:
+  paths:
+    exclude:
+      - local-demo/*
+      - README.md
+
+steps:
+- task: ShellScript@2
+  inputs:
+    scriptPath: 'test.sh'

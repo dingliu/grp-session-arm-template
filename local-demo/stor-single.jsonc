@@ -1,0 +1,34 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "acctNamePrefix": {
+      "type": "string",
+      "metadata": { "description": "the prefix part of the storage account name" }
+    }
+  },
+  "functions": [],
+  "variables": {
+    "storAcctName": "[concat(
+      parameters('acctNamePrefix'),
+      uniqueString(toLower(resourceGroup().id))
+    )]"
+  },
+  "resources": [
+    {
+      "name": "[variables('storAcctName')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2019-06-01",
+      "location": "[resourceGroup().location]",
+      "kind": "StorageV2",
+      "sku": { "name": "Standard_LRS" }
+    }
+  ],
+  "outputs": {
+    "storageAccountName": {
+      "type": "string",
+      "value": "[variables('storAcctName')]"
+    }
+  }
+}
+

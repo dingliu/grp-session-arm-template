@@ -1,0 +1,78 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appName": {
+      "type": "string",
+      "metadata": { "description": "The name of the application." }
+    },
+    "templateBaseURL": {
+      "type": "string",
+      "metadata": { "description": "The base part for constructing the linked template URLs" }
+    }
+  },
+  "functions": [],
+  "variables": {
+    "deploymentName": "[deployment().name]",
+    "location":       "[deployment().location]",
+
+    "rgTemplateFileName":       "rg-single.jsonc",
+    "storAcctTemplateFileName": "stor-single.jsonc",
+
+    "rgDeploymentName": "[concat(variables('deploymentName'), '.rg')]",
+    "rgTemplateURL":    "[concat( parameters('templateBaseURL'), variables('rgTemplateFileName'))]",
+
+    "storAcctDeploymentName": "[concat(variables('deploymentName'), '.stor')]",
+    "storAcctTemplateURL":    "[concat( parameters('templateBaseURL'), variables('storAcctTemplateFileName'))]"
+  },
+  "resources": [
+    // Resource group that houses all resources of the regional application
+    {
+      "name": "[variables('rgDeploymentName')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-10-01",
+      "location": "[variables('location')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('rgTemplateURL')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "rgNamePrefix": { "value": "[concat(parameters('appName'), '-', variables('location'))]" },
+          "location": { "value": "[variables('location')]" }
+        }
+      }
+    },
+    // A single storage account as an example of the regional app resources
+    {
+      "name": "[variables('storAcctDeploymentName')]",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "[variables('rgDeploymentName')]"
+      ],
+      "resourceGroup": "[reference('Microsoft.Resources/deployments', variables('rgDeploymentName')).outputs.rgName.value]",
+      "apiVersion": "2019-10-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('storAcctTemplateURL')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "acctNamePrefix": { "value": "[concat(parameters('appName'), 'stor')]" }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "appRgName": {
+      "type": "string",
+      "value": "[reference('Microsoft.Resources/deployments', variables('rgDeploymentName')).outputs.rgName.value]"
+    },
+    "location": {
+      "type": "string",
+      "value": "[variables('location')]"
+    }
+  }
+}

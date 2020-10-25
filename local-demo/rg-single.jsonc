@@ -1,0 +1,34 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "rgNamePrefix": {
+      "type": "string",
+      "metadata": { "description": "The prefix of the resource group name." }
+    },
+    "location": {
+      "type": "string",
+      "metadata": { "description": "the location of the resource group." }
+    }
+  },
+  "functions": [],
+  "variables": {
+    "rgName": "[concat(parameters('rgNamePrefix'),'-',parameters('location'))]"
+  },
+  "resources": [
+    {
+      "name": "[variables('rgName')]",
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2019-10-01",
+      "location": "[parameters('location')]"
+    }
+  ],
+  "outputs": {
+    "rgName": {
+      "type": "string", "value": "[variables('rgName')]"
+    },
+    "rgResourceID": {
+      "type": "string", "value": "[resourceId('Microsoft.Resources/resourceGroups',variables('rgName'))]"
+    }
+  }
+}
