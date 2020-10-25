@@ -39,7 +39,7 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "rgNamePrefix": { "value": "[concat(parameters('appName'), '-', variables('location'))]" },
+          "rgNamePrefix": { "value": "[parameters('appName')]" },
           "location": { "value": "[variables('location')]" }
         }
       }
@@ -51,7 +51,7 @@
       "dependsOn": [
         "[variables('rgDeploymentName')]"
       ],
-      "resourceGroup": "[reference('Microsoft.Resources/deployments', variables('rgDeploymentName')).outputs.rgName.value]",
+      "resourceGroup": "[concat(parameters('appName'), '-', variables('location'))]",
       "apiVersion": "2019-10-01",
       "properties": {
         "mode": "Incremental",
