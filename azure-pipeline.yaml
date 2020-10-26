@@ -40,7 +40,7 @@ steps:
   displayName: ARM template deployment
   inputs:
     deploymentScope: 'Subscription'
-    azureResourceManagerConnection:
+    azureResourceManagerConnection: $(azSrvcConn)
     subscriptionId: $(subId)
     location: 'Canada Central'
     templateLocation: 'Linked artifact'
