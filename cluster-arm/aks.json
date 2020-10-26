@@ -1,0 +1,66 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "clusterName": {
+      "type": "string",
+      "metadata": { "description": "The name of the AKS cluster." }
+    },
+    "kubernetesVersion": {
+      "type": "string",
+      "metadata": { "description": "Kubernetes version the AKS cluster." }
+    },
+    "nodeCount": {
+      "type": "int",
+      "metadata": { "description": "The number of nodes the AKS cluster will have." }
+    },
+    "nodeSize": {
+      "type": "string",
+      "metadata": { "description": "Which size the AKS cluster's nodes will use." }
+    },
+    "enableRBAC": {
+      "type": "bool",
+      "metadata": { "description": "Should Kubernetes RBAC mode be enabled or not." }
+    }
+  },
+  "resources": [
+    {
+      "apiVersion": "2020-09-01",
+      "type": "Microsoft.ContainerService/managedClusters",
+      "location": "[resourceGroup().location]",
+      "name": "[parameters('clusterName')]",
+      "properties": {
+        "kubernetesVersion": "[parameters('kubernetesVersion')]",
+        "enableRBAC": "[parameters('enableRBAC')]",
+        "agentPoolProfiles": [
+          {
+            "name": "agentpool",
+            "osDiskSizeGB": 0,
+            "count": "[parameters('nodeCount')]",
+            "vmSize": "[parameters('nodeSize')]",
+            "osType": "Linux",
+            "storageProfile": "ManagedDisks",
+            "type": "AvailabilitySet",
+            "mode": "System",
+            "maxPods": 110
+          }
+        ],
+        "networkProfile": {
+          "loadBalancerSku": "standard",
+          "networkPlugin": "kubenet"
+        }
+      },
+      "identity": { "type": "SystemAssigned" }
+    }
+  ],
+  "outputs": {
+    "clusterResourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.ContainerService/managedClusters',parameters('clusterName'))]"
+    },
+    "controlPlaneFQDN": {
+      "type": "object",
+      "value": "[reference(concat('Microsoft.ContainerService/managedClusters/', parameters('clusterName'))).fqdn]"
+    }
+  }
+}

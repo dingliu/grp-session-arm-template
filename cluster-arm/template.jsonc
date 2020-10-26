@@ -1,0 +1,96 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "rgName": {
+      "type": "string",
+      "metadata": { "description": "The resource group name." }
+    },
+    "location": {
+      "type": "string",
+      "metadata": { "description": "The location of the resource group." }
+    },
+    "clusterName": {
+      "type": "string",
+      "metadata": { "description": "The location of the resource group." }
+    },
+    "clusterSpec": {
+      "type": "object",
+      "metadata": { "description": [
+        "The informaton about the AKS cluster as an object, which contains:",
+        "kubernetesVersion (string) - Kubernetes version the AKS cluster.",
+        "nodeCount (int) - The number of nodes the AKS cluster will have.",
+        "nodeSize (string) - Which size the AKS cluster's nodes will use.",
+        "enableRBAC (bool) - Should Kubernetes RBAC mode be enabled or not."
+      ]}
+    }
+  },
+  "functions": [],
+  "variables": {
+    "deploymentName":       "[deployment().name]",
+
+    "templateBaseURL":      "https://raw.githubusercontent.com/dingliu/grp-session-arm-template/master/cluster-arm/",
+    "rgTemplateFileName":   "rg.jsonc",
+    "aksTemplateFileName":  "aks.jsonc",
+
+    "rgDeploymentName":     "[concat(variables('deploymentName'), '.rg')]",
+    "rgTemplateURL":        "[concat(variables('templateBaseURL'), variables('rgTemplateFileName'))]",
+
+    "aksDeploymentName":    "[concat(variables('deploymentName'), '.aks')]",
+    "aksTemplateURL":       "[concat(variables('templateBaseURL'), variables('aksTemplateFileName'))]"
+  },
+  "resources": [
+    // Resource group that houses an AKS cluster
+    {
+      "name": "[variables('rgDeploymentName')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-10-01",
+      "location": "[parameters('location')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('rgTemplateURL')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "rgName": { "value": "[parameters('rgName')]" },
+          "location": { "value": "[parameters('location')]" }
+        }
+      }
+    },
+    // An AKS cluster that houses the application
+    {
+      "name": "[variables('aksDeploymentName')]",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "[variables('rgDeploymentName')]"
+      ],
+      "resourceGroup": "[parameters('rgName')]",
+      "apiVersion": "2019-10-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('aksTemplateURL')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "clusterName": { "value": "[parameters('clusterName')]" },
+          "kubernetesVersion": { "value": "[parameters('clusterSpec').kubernetesVersion]" },
+          "nodeCount": { "value": "[parameters('clusterSpec').nodeCount]" },
+          "nodeSize": { "value": "[parameters('clusterSpec').nodeSize]" },
+          "enableRBAC": { "value": "[parameters('clusterSpec').enableRBAC]" }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "rgName": {
+      "type": "string",
+      "value": "[reference(variables('rgDeploymentName')).outputs.rgName.value]"
+    },
+    "aksResourceId": {
+      "type": "string",
+      "value": "[reference(variables('aksDeploymentName')).outputs.clusterResourceId.value]"
+    }
+  }
+}

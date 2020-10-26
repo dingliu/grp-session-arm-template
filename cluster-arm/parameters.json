@@ -1,0 +1,23 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "rgName": {
+      "value": "pipeline-demo"
+    },
+    "location":{
+      "value": "canadacentral"
+    },
+    "clusterName":{
+      "value": "hello-cluster"
+    },
+    "clusterSpec":{
+      "value": {
+        "kubernetesVersion": "1.18.8",
+        "nodeCount": 3,
+        "nodeSize": "Standard_DS2_v2",
+        "enableRBAC": true
+      }
+    }
+  }
+}
