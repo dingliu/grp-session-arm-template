@@ -12,11 +12,11 @@ trigger:
 
 variables:
     azSrvcConn: azrm-sp
+    subId: '26129cfc-8933-4773-bf5c-52f554970004'
     dockerSrvcConn: dockerhub_dingliu
     dockerRepo: dingliu/hello-app
     rgName: pipeline-demo
     clusterName: hello-cluster
-    subId: '26129cfc-8933-4773-bf5c-52f554970004'
 
 steps:
 # Build Docker image and push it to Docker HUB
@@ -41,7 +41,7 @@ steps:
   inputs:
     deploymentScope: 'Subscription'
     azureResourceManagerConnection:
-    subscriptionId: '1d2c4243-4be0-474a-b212-2cd56f17ac85'
+    subscriptionId: $(subId)
     location: 'Canada Central'
     templateLocation: 'Linked artifact'
     csmFile: 'cluster-arm/template.jsonc'
