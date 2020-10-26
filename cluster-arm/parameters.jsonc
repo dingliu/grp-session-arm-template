@@ -15,7 +15,7 @@
       "value": {
         "kubernetesVersion": "1.18.8",
         "nodeCount": 3,
-        "nodeSize": "Standard_DS1_v2",
+        "nodeSize": "Standard_B2s",
         "enableRBAC": true
       }
     }
