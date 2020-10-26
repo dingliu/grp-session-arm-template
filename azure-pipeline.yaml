@@ -44,8 +44,8 @@ steps:
     subscriptionId: $(subId)
     location: 'Canada Central'
     templateLocation: 'Linked artifact'
-    csmFile: './cluster-arm/template.jsonc'
-    csmParametersFile: './cluster-arm/parameters.jsonc'
+    csmFile: 'cluster-arm/template.jsonc'
+    csmParametersFile: 'cluster-arm/parameters.jsonc'
     overrideParameters: '-rgName $(rgName) -clusterName $(clusterName)'
     deploymentMode: 'Incremental'
     deploymentName: $(Build.BuildNumber)
