@@ -60,7 +60,7 @@
       "value": "[resourceId('Microsoft.ContainerService/managedClusters',parameters('clusterName'))]"
     },
     "controlPlaneFQDN": {
-      "type": "object",
+      "type": "string",
       "value": "[reference(concat('Microsoft.ContainerService/managedClusters/', parameters('clusterName'))).fqdn]"
     }
   }
