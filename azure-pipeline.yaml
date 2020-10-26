@@ -16,6 +16,7 @@ variables:
     dockerRepo: dingliu/hello-app
     rgName: pipeline-demo
     clusterName: hello-cluster
+    subId: '26129cfc-8933-4773-bf5c-52f554970004'
 
 steps:
 # Build Docker image and push it to Docker HUB
