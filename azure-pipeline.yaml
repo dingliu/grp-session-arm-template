@@ -11,12 +11,17 @@ trigger:
       - README.md
 
 variables:
-    azSrvcConn: azrm-sp
-    subId: '26129cfc-8933-4773-bf5c-52f554970004'
-    dockerSrvcConn: dockerhub_dingliu
-    dockerRepo: dingliu/hello-app
-    rgName: pipeline-demo
-    clusterName: hello-cluster
+  - group: common-var-grp
+  - name: azSrvcConn
+    value: 'azrm-sp'
+  - name: dockerSrvcConn
+    value: 'dockerhub_dingliu'
+  - name: dockerRepo
+    value: 'dingliu/hello-app'
+  - name: rgName
+    value: 'pipeline-demo'
+  - name: clusterName
+    value: 'hello-cluster'
 
 steps:
 # Build Docker image and push it to Docker HUB
@@ -41,7 +46,7 @@ steps:
   inputs:
     deploymentScope: 'Subscription'
     azureResourceManagerConnection: $(azSrvcConn)
-    subscriptionId: $(subId)
+    subscriptionId: $(subscriptionId)
     location: 'Canada Central'
     templateLocation: 'Linked artifact'
     csmFile: 'cluster-arm/template.jsonc'
