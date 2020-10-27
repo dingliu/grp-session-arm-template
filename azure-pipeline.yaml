@@ -69,8 +69,8 @@ stages:
   displayName: Apply Kubernetes manifests
   condition: succeeded()
   jobs:
-  - job: arm-template
-    displayName: ARM template deployment
+  - job: k8s-manifests
+    displayName: Kubernetes manifests
     steps:
     - template: experimental.yml
       parameters:
