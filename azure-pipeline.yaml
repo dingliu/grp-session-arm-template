@@ -25,10 +25,10 @@ variables:
   value: 'hello-cluster'
 
 stages:
-- stage: build-push-hello-app
+- stage: build_push_hello_app
   displayName: Build and push hello-app to Docker Hub
   jobs:
-  - job: docker-job
+  - job: docker_job
     displayName: Docker job
     steps:
     - task: Docker@2
@@ -46,11 +46,11 @@ stages:
         tags: |
           $(Build.BuildNumber)
           latest
-- stage: deploy-aks-cluster
+- stage: deploy_aks_cluster
   displayName: AKS cluster deployment
   condition: succeeded()
   jobs:
-  - job: arm-template
+  - job: arm_template
     displayName: ARM template deployment
     steps:
     - task: AzureResourceManagerTemplateDeployment@3
@@ -66,11 +66,11 @@ stages:
         overrideParameters: '-rgName $(rgName) -clusterName $(clusterName)'
         deploymentMode: 'Incremental'
         deploymentName: $(Build.BuildNumber)
-- stage: apply-k8s-manifests
+- stage: apply_k8s_manifests
   displayName: Apply Kubernetes manifests
   condition: succeeded()
   jobs:
-  - job: k8s-manifests
+  - job: k8s_manifests
     displayName: Kubernetes manifests
     steps:
     - template: kubectl-step.yml
