@@ -1,22 +1,22 @@
 # kubectl step for Azure DevOps pipeline
 parameters:
-  - name: "srvcConnection"
-    type: string
-  - name: "rgName"
-    type: string
-  - name: "clusterName"
-    type: string
-  - name: "manifests"
-    type: object
+- name: "srvcConnection"
+  type: string
+- name: "rgName"
+  type: string
+- name: "clusterName"
+  type: string
+- name: "manifests"
+  type: object
 
 steps:
-  - ${{ each file in parameters.manifests }}:
-    - task: Kubernetes@1
-      displayName: Apply ${{ file }}
-      inputs:
-        connectionType: 'Azure Resource Manager'
-        azureSubscriptionEndpoint: ${{ srvcConnection }}
-        azureResourceGroup: ${{ rgName }}
-        kubernetesCluster: ${{ clusterName }}
-        command: 'apply'
-        arguments: -f ${{ file }}
+- ${{ each file in parameters.manifests }}:
+  - task: Kubernetes@1
+    displayName: Apply ${{ file }}
+    inputs:
+      connectionType: 'Azure Resource Manager'
+      azureSubscriptionEndpoint: ${{ srvcConnection }}
+      azureResourceGroup: ${{ rgName }}
+      kubernetesCluster: ${{ clusterName }}
+      command: 'apply'
+      arguments: -f ${{ file }}

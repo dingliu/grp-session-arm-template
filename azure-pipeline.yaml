@@ -1,3 +1,4 @@
+# Azure DevOps pipeline definition for Toronto Cloud Group Demo
 name: $(Build.DefinitionName)_$(Date:yyyyMMdd)$(Rev:.r)
 
 pool:
@@ -11,17 +12,17 @@ trigger:
       - README.md
 
 variables:
-  - group: common-var-grp
-  - name: azSrvcConn
-    value: 'azrm-sp'
-  - name: dockerSrvcConn
-    value: 'dockerhub_dingliu'
-  - name: dockerRepo
-    value: 'dingliu/hello-app'
-  - name: rgName
-    value: 'pipeline-demo'
-  - name: clusterName
-    value: 'hello-cluster'
+- group: common-var-grp
+- name: azSrvcConn
+  value: 'azrm-sp'
+- name: dockerSrvcConn
+  value: 'dockerhub_dingliu'
+- name: dockerRepo
+  value: 'dingliu/hello-app'
+- name: rgName
+  value: 'pipeline-demo'
+- name: clusterName
+  value: 'hello-cluster'
 
 stages:
 - stage: build-push-hello-app
@@ -78,7 +79,7 @@ stages:
         rgName: $(rgName)
         clusterName: $(clusterName)
         manifests:
-          - "cluster-manifests/helloweb-deployment.yaml"
-          - "cluster-manifests/helloweb-hpa.yaml"
-          - "cluster-manifests/helloweb-service-static-ip.yaml"
-          - "cluster-manifests/helloweb-ingress-static-ip.yaml"
+        - "cluster-manifests/helloweb-deployment.yaml"
+        - "cluster-manifests/helloweb-hpa.yaml"
+        - "cluster-manifests/helloweb-service-static-ip.yaml"
+        - "cluster-manifests/helloweb-ingress-static-ip.yaml"
