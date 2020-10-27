@@ -23,71 +23,62 @@ variables:
   - name: clusterName
     value: 'hello-cluster'
 
-steps:
-# Build Docker image and push it to Docker HUB
-- task: Docker@2
-  displayName: Login to Docker Hub
-  inputs:
-    command: login
-    containerRegistry: $(dockerSrvcConn)
-- task: Docker@2
-  displayName: Build and Push hello-app
-  inputs:
-    command: buildAndPush
-    repository: $(dockerRepo)
-    Dockerfile: 'hello-app/Dockerfile'
-    buildContext: 'hello-app/'
-    tags: |
-      $(Build.BuildNumber)
-      latest
-# Deploy AKS cluster
-- task: AzureResourceManagerTemplateDeployment@3
-  displayName: ARM template deployment
-  inputs:
-    deploymentScope: 'Subscription'
-    azureResourceManagerConnection: $(azSrvcConn)
-    subscriptionId: $(subscriptionId)
-    location: 'Canada Central'
-    templateLocation: 'Linked artifact'
-    csmFile: 'cluster-arm/template.jsonc'
-    csmParametersFile: 'cluster-arm/parameters.jsonc'
-    overrideParameters: '-rgName $(rgName) -clusterName $(clusterName)'
-    deploymentMode: 'Incremental'
-    deploymentName: $(Build.BuildNumber)
-# Apply Kubernetes manifests
-- task: Kubernetes@1
-  displayName: Apply Deployment Manifest
-  inputs:
-    connectionType: 'Azure Resource Manager'
-    azureSubscriptionEndpoint: $(azSrvcConn)
-    azureResourceGroup: $(rgName)
-    kubernetesCluster: $(clusterName)
-    command: 'apply'
-    arguments: -f cluster-manifests/helloweb-deployment.yaml
-- task: Kubernetes@1
-  displayName: Apply HPA Manifest
-  inputs:
-    connectionType: 'Azure Resource Manager'
-    azureSubscriptionEndpoint: $(azSrvcConn)
-    azureResourceGroup: $(rgName)
-    kubernetesCluster: $(clusterName)
-    command: 'apply'
-    arguments: -f cluster-manifests/helloweb-hpa.yaml
-- task: Kubernetes@1
-  displayName: Apply LoadBalancer Service Manifest
-  inputs:
-    connectionType: 'Azure Resource Manager'
-    azureSubscriptionEndpoint: $(azSrvcConn)
-    azureResourceGroup: $(rgName)
-    kubernetesCluster: $(clusterName)
-    command: 'apply'
-    arguments: -f cluster-manifests/helloweb-service-static-ip.yaml
-- task: Kubernetes@1
-  displayName: Apply Ingress Manifest
-  inputs:
-    connectionType: 'Azure Resource Manager'
-    azureSubscriptionEndpoint: $(azSrvcConn)
-    azureResourceGroup: $(rgName)
-    kubernetesCluster: $(clusterName)
-    command: 'apply'
-    arguments: -f cluster-manifests/helloweb-ingress-static-ip.yaml
+stages:
+- stage: build-push-hello-app
+  displayName: Build and push hello-app to Docker Hub
+  jobs:
+  - job: docker-job
+    displayName: Docker job
+    steps:
+    - task: Docker@2
+      displayName: Login to Docker Hub
+      inputs:
+        command: login
+        containerRegistry: $(dockerSrvcConn)
+    - task: Docker@2
+      displayName: Build and Push hello-app
+      inputs:
+        command: buildAndPush
+        repository: $(dockerRepo)
+        Dockerfile: 'hello-app/Dockerfile'
+        buildContext: 'hello-app/'
+        tags: |
+          $(Build.BuildNumber)
+          latest
+- stage: deploy-aks-cluster
+  displayName: AKS cluster deployment
+  condition: succeeded()
+  jobs:
+  - job: arm-template
+    displayName: ARM template deployment
+    steps:
+    - task: AzureResourceManagerTemplateDeployment@3
+      displayName: ARM template deployment
+      inputs:
+        deploymentScope: 'Subscription'
+        azureResourceManagerConnection: $(azSrvcConn)
+        subscriptionId: $(subscriptionId)
+        location: 'Canada Central'
+        templateLocation: 'Linked artifact'
+        csmFile: 'cluster-arm/template.jsonc'
+        csmParametersFile: 'cluster-arm/parameters.jsonc'
+        overrideParameters: '-rgName $(rgName) -clusterName $(clusterName)'
+        deploymentMode: 'Incremental'
+        deploymentName: $(Build.BuildNumber)
+- stage: apply-k8s-manifests
+  displayName: Apply Kubernetes manifests
+  condition: succeeded()
+  jobs:
+  - job: arm-template
+    displayName: ARM template deployment
+    steps:
+    - template: experimental.yml
+      parameters:
+        srvcConnection: $(azSrvcConn)
+        rgName: $(rgName)
+        clusterName: $(clusterName)
+        manifests:
+          - "cluster-manifests/helloweb-deployment.yaml"
+          - "cluster-manifests/helloweb-hpa.yaml"
+          - "cluster-manifests/helloweb-service-static-ip.yaml"
+          - "cluster-manifests/helloweb-ingress-static-ip.yaml"
