@@ -75,9 +75,6 @@ stages:
     steps:
     - template: kubectl-step.yml
       parameters:
-        srvcConnection: $(azSrvcConn)
-        rgName: $(rgName)
-        clusterName: $(clusterName)
         manifests:
         - "cluster-manifests/helloweb-deployment.yaml"
         - "cluster-manifests/helloweb-hpa.yaml"
