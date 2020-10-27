@@ -9,10 +9,11 @@ This is the code repo for the demos in Toronto Cloud Group Session: ARM Template
 ```
 .
 ├── LICENSE
-├── README.md              // This README file.
-├── azure-pipeline.yaml    // Azure DevOps pipeline definition.
+├── README.md              // This README file
+├── azure-pipeline.yaml    // Azure DevOps pipeline definition
+├── kubectl-step.yml       // Repeatable step definition for pipeline
 ├── cluster-arm
-│   ├── // ARM templates for an AKS cluster and its resource group.
+│   ├── // ARM templates for an AKS cluster and its resource group
 │   └── ...
 ├── cluster-manifests
 │   ├── // Kubernetes manifests for hello-app. (from GKE example)
@@ -21,7 +22,7 @@ This is the code repo for the demos in Toronto Cloud Group Session: ARM Template
 │   ├── // hello-app code and Docker file. (from GKE example)
 │   └── ...
 └── local-demo
-    ├── // Local demo used during the group session.
+    ├── // Local demo used during the group session
     └── ...
 ```
 
