@@ -27,7 +27,9 @@ This is the code repo for the demos in Toronto Cloud Group Session: ARM Template
 
 ## PLEASE NOTE
 
-This repo should be used for demonstration purpose only. The code here is NOT suitable for production use. It doesn't have:
+This repo should be used for demonstration purpose only.
+
+The code here is NOT suitable for production use. It doesn't have:
 
 - Automated tests & TDD
 - Semantic versioning & dependency control
