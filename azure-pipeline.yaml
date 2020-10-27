@@ -72,7 +72,7 @@ stages:
   - job: k8s-manifests
     displayName: Kubernetes manifests
     steps:
-    - template: experimental.yml
+    - template: kubectl-step.yml
       parameters:
         srvcConnection: $(azSrvcConn)
         rgName: $(rgName)
