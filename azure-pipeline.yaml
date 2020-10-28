@@ -80,3 +80,4 @@ stages:
         - "cluster-manifests/helloweb-hpa.yaml"
         - "cluster-manifests/helloweb-service-static-ip.yaml"
         - "cluster-manifests/helloweb-ingress-static-ip.yaml"
+
