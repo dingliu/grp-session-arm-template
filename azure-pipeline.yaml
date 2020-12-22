@@ -31,5 +31,5 @@ stages:
   - job: test_job
     displayName: Test job
     steps:
-    - bash |
+    - bash: |
         echo "Hello world"
