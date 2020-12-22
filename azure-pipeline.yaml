@@ -1,5 +1,5 @@
 # Azure DevOps pipeline definition for Toronto Cloud Group Demo
-name: $(Build.DefinitionName)_$(Date:yyyyMMdd)$(Rev:.r)
+name: $(Build.DefinitionName)_$(Date:yyyyMMdd)_$(Time)_$(Rev:.r)
 
 pool:
   vmImage: 'ubuntu-18.04'
@@ -46,38 +46,3 @@ stages:
         tags: |
           $(Build.BuildNumber)
           latest
-- stage: deploy_aks_cluster
-  displayName: AKS cluster deployment
-  condition: succeeded()
-  jobs:
-  - job: arm_template
-    displayName: ARM template deployment
-    steps:
-    - task: AzureResourceManagerTemplateDeployment@3
-      displayName: ARM template deployment
-      inputs:
-        deploymentScope: 'Subscription'
-        azureResourceManagerConnection: $(azSrvcConn)
-        subscriptionId: $(subscriptionId)
-        location: 'Canada Central'
-        templateLocation: 'Linked artifact'
-        csmFile: 'cluster-arm/template.jsonc'
-        csmParametersFile: 'cluster-arm/parameters.jsonc'
-        overrideParameters: '-rgName $(rgName) -clusterName $(clusterName)'
-        deploymentMode: 'Incremental'
-        deploymentName: $(Build.BuildNumber)
-- stage: apply_k8s_manifests
-  displayName: Apply Kubernetes manifests
-  condition: succeeded()
-  jobs:
-  - job: k8s_manifests
-    displayName: Kubernetes manifests
-    steps:
-    - template: kubectl-step.yml
-      parameters:
-        manifests:
-        - "cluster-manifests/helloweb-deployment.yaml"
-        - "cluster-manifests/helloweb-hpa.yaml"
-        - "cluster-manifests/helloweb-service-static-ip.yaml"
-        - "cluster-manifests/helloweb-ingress-static-ip.yaml"
-
