@@ -1,5 +1,5 @@
 # Azure DevOps pipeline definition for Toronto Cloud Group Demo
-name: $(Build.DefinitionName)_$(Date:yyyyMMdd)_$(Hours)_$(Minutes:mm)_$(Seconds:ss)_$(Rev:.r)
+name: $(Build.DefinitionName)_$(Date:yyyyMMdd)_UTC$(Hours).$(Minutes).$(Seconds)_$(Rev:.r)
 
 pool:
   vmImage: 'ubuntu-18.04'
